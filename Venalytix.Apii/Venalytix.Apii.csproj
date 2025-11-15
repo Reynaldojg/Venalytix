@@ -7,7 +7,19 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Content Remove="appsettings.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Include="appsettings.json">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\Venalytix.Apication\Venalytix.Apication.csproj" />
+    <ProjectReference Include="..\Venalytix.Domain\Venalytix.Domain.csproj" />
+    <ProjectReference Include="..\Venalytix.Persistence\Venalytix.Persistence.csproj" />
   </ItemGroup>
 
 </Project>
