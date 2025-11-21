@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Logging;
+﻿using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Venalytix.Apication.Interfaces.IExtractor;
@@ -10,11 +11,19 @@ namespace Venalytix.Apication.Services.Extractors
     {
         private readonly ILogger<ApiExtractor> _logger;
         private readonly HttpClient _httpClient;
+        private readonly IConfiguration _config;
 
-        public ApiExtractor(ILogger<ApiExtractor> logger, HttpClient httpClient, Microsoft.Extensions.Configuration.IConfigurationRoot config)
+        public ApiExtractor(
+            ILogger<ApiExtractor> logger,
+            HttpClient httpClient,
+            IConfiguration config)
         {
             _logger = logger;
             _httpClient = httpClient;
+            _config = config;
+
+            // 🟢 Configurar automáticamente la URL base desde appsettings
+            _httpClient.BaseAddress = new Uri(_config["ApiSettings:BaseUrl"]);
         }
 
         public async Task<OperationResult> ExtraerAsync()
@@ -23,8 +32,10 @@ namespace Venalytix.Apication.Services.Extractors
             {
                 _logger.LogInformation("🌐 Iniciando extracción desde API REST...");
 
-                // 👉 Endpoint de tu propia API
-                var response = await _httpClient.GetAsync("https://localhost:7101/api/Clientes");
+                // 👉 Endpoint definido en appsettings.json
+                string endpoint = _config["ApiSettings:ClientesEndpoint"];
+
+                var response = await _httpClient.GetAsync(endpoint);
 
                 if (!response.IsSuccessStatusCode)
                 {
@@ -47,4 +58,3 @@ namespace Venalytix.Apication.Services.Extractors
         }
     }
 }
-
