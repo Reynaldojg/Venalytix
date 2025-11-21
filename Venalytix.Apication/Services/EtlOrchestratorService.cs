@@ -9,12 +9,12 @@ namespace Venalytix.Apication.Services
     /// Servicio orquestador del proceso ETL: controla la secuencia de Extracción, Transformación y Carga.
     public class EtlOrchestratorService
     {
-        private readonly IExtractor _csvExtractor;
+        private readonly IExtractor ExtractoAll;
         private readonly ILogger<EtlOrchestratorService> _logger;
 
-        public EtlOrchestratorService(IExtractor csvExtractor, ILogger<EtlOrchestratorService> logger)
+        public EtlOrchestratorService(IExtractor extractoAll, ILogger<EtlOrchestratorService> logger)
         {
-            _csvExtractor = csvExtractor;
+            ExtractoAll = extractoAll;
             _logger = logger;
         }
 
@@ -25,7 +25,7 @@ namespace Venalytix.Apication.Services
 
             try
             {
-                var resultadoExtraccion = await _csvExtractor.ExtraerAsync();
+                var resultadoExtraccion = await ExtractoAll.ExtraerAsync(); 
 
                 if (!resultadoExtraccion.IsSuccess)
                 {
