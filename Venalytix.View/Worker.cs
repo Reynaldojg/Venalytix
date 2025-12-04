@@ -1,24 +1,31 @@
-namespace Venalytix.View
+﻿using Venalytix.Apication.Services;
+
+public class Worker : BackgroundService
 {
-    public class Worker : BackgroundService
+    private readonly ILogger<Worker> _logger;
+    private readonly EtlOrchestratorService _etl;
+
+    public Worker(ILogger<Worker> logger, EtlOrchestratorService etl)
     {
-        private readonly ILogger<Worker> _logger;
+        _logger = logger;
+        _etl = etl;
+    }
 
-        public Worker(ILogger<Worker> logger)
-        {
-            _logger = logger;
-        }
+    protected override async Task ExecuteAsync(CancellationToken stoppingToken)
+    {
+        _logger.LogInformation("Worker iniciado.");
 
-        protected override async Task ExecuteAsync(CancellationToken stoppingToken)
-        {
-            while (!stoppingToken.IsCancellationRequested)
-            {
-                if (_logger.IsEnabled(LogLevel.Information))
-                {
-                    _logger.LogInformation("Worker running at: {time}", DateTimeOffset.Now);
-                }
-                await Task.Delay(1000, stoppingToken);
-            }
-        }
+        // 🔥 EJECUTAR ETL
+        _logger.LogInformation("🚀 Ejecutando proceso ETL...");
+
+        var resultado = await _etl.EjecutarEtlCompletoAsync();
+
+        if (resultado.IsSuccess)
+            _logger.LogInformation($"✅ ETL completado: {resultado.Message}");
+        else
+            _logger.LogError($"❌ ETL falló: {resultado.Message}");
+
+        // ❗ IMPORTANTE: Detener el Worker cuando termine el ETL
+        _logger.LogInformation("⛔ Finalizando Worker luego del ETL.");
     }
 }

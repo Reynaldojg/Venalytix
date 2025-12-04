@@ -29,5 +29,5 @@ namespace Venalytix.Domain.OperationBase
                 Message = message
             };
         }
-    }
+    }   
 }

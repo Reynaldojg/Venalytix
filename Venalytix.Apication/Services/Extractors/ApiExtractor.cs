@@ -2,7 +2,7 @@
 using Microsoft.Extensions.Logging;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Venalytix.Apication.Interfaces.IExtractor;
+using Venalytix.Apication.Interfaces.ETL;
 using Venalytix.Domain.OperationBase;
 
 namespace Venalytix.Apication.Services.Extractors

@@ -9,5 +9,12 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Extensions.Hosting" Version="8.0.1" />
+    <PackageReference Include="Microsoft.Extensions.Logging.Abstractions" Version="10.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\Venalytix.Apication\Venalytix.Apication.csproj" />
+    <ProjectReference Include="..\Venalytix.Domain\Venalytix.Domain.csproj" />
+    <ProjectReference Include="..\Venalytix.Persistence\Venalytix.Persistence.csproj" />
   </ItemGroup>
 </Project>

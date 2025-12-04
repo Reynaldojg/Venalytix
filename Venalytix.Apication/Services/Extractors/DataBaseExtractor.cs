@@ -1,6 +1,6 @@
 ﻿using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
-using Venalytix.Apication.Interfaces.IExtractor;
+using Venalytix.Apication.Interfaces.ETL;
 using Venalytix.Domain.OperationBase;
 
 namespace Venalytix.Apication.Services.Extractors

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Venalytix.Domain.OperationBase;
 
-namespace Venalytix.Apication.Interfaces.IExtractor
+namespace Venalytix.Apication.Interfaces.ETL
 {
     public interface IExtractor
     {
