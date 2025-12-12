@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
 using Venalytix.Apication.Interfaces.ELT;
 using Venalytix.Apication.Interfaces.ETL;
+using Venalytix.Domain.CSV;
 using Venalytix.Domain.OperationBase;
 
 namespace Venalytix.Apication.Services.Transformer
@@ -19,37 +20,51 @@ namespace Venalytix.Apication.Services.Transformer
 
         public OperationResult Transform(object data)
         {
-            _logger.LogInformation(" Iniciando MultiTransformer…");
+            _logger.LogInformation("🟣 Iniciando MultiTransformer…");
 
-            var listaDatos = data as IEnumerable<object>;
-            var resultadoFinal = new List<object>();
+            if (data == null)
+                return OperationResult.Failure("El paquete recibido es nulo.");
 
-            int i = 0;
+            // Convertimos el paquete dinámico en tipado
+            dynamic paquete = data;
+
+            List<Clientes> clientes = paquete.Clientes;
+            List<Productos> productos = paquete.Productos;
+            List<Ventas> ventas = paquete.Ventas;
+
+            var clientesTransformados = clientes;
+            var productosTransformados = productos;
+            var ventasTransformadas = ventas;
+
+            // Ejecutar cada transformer según su tipo
             foreach (var transformer in _transformers)
             {
-                if (i >= listaDatos.Count()) break; // proteger índice
+                _logger.LogInformation("➡ Ejecutando transformer: {T}", transformer.GetType().Name);
 
-                var datos = listaDatos.ElementAt(i);
-
-                var result = transformer.Transform(datos);
-
-                if (!result.IsSuccess)
+                if (transformer is CsvTransformer)
                 {
-                    _logger.LogWarning("⚠️ Error transformando con {T}: {M}",
-                        transformer.GetType().Name,
-                        result.Message);
-                }
-                else if (result.Data != null)
-                {
-                    resultadoFinal.Add(result.Data);
+                    var res = transformer.Transform(paquete);
+                    if (res.IsSuccess) paquete = res.Data;
                 }
 
-                i++;
+                if (transformer is ApiTransformer)
+                {
+                    var res = transformer.Transform(paquete);
+                    if (res.IsSuccess) paquete = res.Data;
+                }
             }
+
+            // Volvemos a armar el paquete final
+            var paqueteFinal = new
+            {
+                Clientes = paquete.Clientes,
+                Productos = paquete.Productos,
+                Ventas = paquete.Ventas
+            };
 
             _logger.LogInformation("🟣 MultiTransformer completado.");
 
-            return OperationResult.Success(resultadoFinal);
+            return OperationResult.Success(paqueteFinal);
         }
     }
 }

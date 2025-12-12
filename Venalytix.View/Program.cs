@@ -6,30 +6,28 @@ using Venalytix.Apication.Services.Loaders;
 using Venalytix.Apication.Services.Transformer;
 
 var builder = Host.CreateDefaultBuilder(args)
-    .ConfigureServices((context, services) =>
-    {
-        var config = context.Configuration;
+.ConfigureServices((context, services) =>
+{
+    // EXTRACTORS
+    services.AddHttpClient<ApiExtractor>();
+    services.AddSingleton<IExtractor, ApiExtractor>();
+    services.AddSingleton<IExtractor, CsvExtractor>();
+    services.AddSingleton<IExtractor, DbExtractor>();
 
-        string tipo = config["ExtractorSettings:Tipo"]?.ToUpper() ?? "CSV";
+    // TRANSFORMERS
+    services.AddSingleton<ITransformer, ApiTransformer>();
+    services.AddSingleton<ITransformer, CsvTransformer>();
+    services.AddSingleton<ITransformer, DbTransformer>();
+    services.AddSingleton<ITransformer, FactVentasTransformer>();
 
+    // LOADERS
+    services.AddSingleton<ILoader, CsvLoader>();
+    services.AddSingleton<ILoader, FactVentasLoader>();
 
-        services.AddHttpClient<ApiExtractor>();
-        services.AddSingleton<IExtractor, ApiExtractor>();
-        services.AddSingleton<IExtractor, CsvExtractor>();
-        Console.WriteLine(" Registrados: ApiExtractor + CsvExtractor");
-
-        services.AddSingleton<ITransformer, CsvTransformer>();
-        Console.WriteLine(" Registrado: CsvTransformer");
-
-
-        services.AddSingleton<ILoader, CsvLoader>();
-        Console.WriteLine(" Registrado: CsvLoader");
-
-
-        services.AddSingleton<EtlOrchestratorService>();
-
-        services.AddHostedService<Worker>();
-    });
+    // ORCHESTRATOR
+    services.AddSingleton<EtlOrchestratorService>();
+    services.AddHostedService<Worker>();
+});
 
 await builder.RunConsoleAsync();
 
